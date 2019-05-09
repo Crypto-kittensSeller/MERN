@@ -4,7 +4,7 @@ import './App.css';
 import Navbar from './components/layout/Navbar';
 import Landing from './components/layout/Landing';
 import Login from './components/auth/Login';
-import Register from './components/auth/Reister';
+import Register from './components/auth/Register';
 
 const App = () => (
   <Router>
