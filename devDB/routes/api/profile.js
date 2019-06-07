@@ -75,38 +75,41 @@ router.post(
     if (status) profileFields.status = status;
     if (githubusername) profileFields.githubusername = githubusername;
     if (skills) {
-      profileFields.skills = skills.split(',').map(skill => skill.trim());
-
-      // Build social object
-
-      profileFields.social = {};
-      if (youtube) profileFields.social.youtube = youtube;
-      if (twitter) profileFields.social.twitter = twitte;
-      if (facebook) profileFields.social.facebook = facebook;
-      if (linkedin) profileFields.social.linkedin = linkedin;
-      if (instagram) profileFields.social.instagram = instagram;
-
-      try {
-        let profile = await Profile.findOne({ user: req.user.id });
-        if (profile) {
-          //update
-          profile = await Profile.findOneAndUpdate(
-            { user: req.user.id },
-            { $set: profileFields },
-            { new: true }
-          );
-
-          return res.json(profile);
-        }
-
-        //create
-        profile = new Profile(profileFields);
-        await profile.save();
-        res.json(profile);
-      } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
+      if (!Array.isArray(skills)) {
+        profileFields.skills = skills.split(',').map(skill => skill.trim());
+      } else {
+        profileFields.skills = skills.map(skill => skill.trim());
       }
+    }
+    // Build social object
+
+    profileFields.social = {};
+    if (youtube) profileFields.social.youtube = youtube;
+    if (twitter) profileFields.social.twitter = twitter;
+    if (facebook) profileFields.social.facebook = facebook;
+    if (linkedin) profileFields.social.linkedin = linkedin;
+    if (instagram) profileFields.social.instagram = instagram;
+
+    try {
+      let profile = await Profile.findOne({ user: req.user.id });
+      if (profile) {
+        //update
+        profile = await Profile.findOneAndUpdate(
+          { user: req.user.id },
+          { $set: profileFields },
+          { new: true }
+        );
+
+        return res.json(profile);
+      }
+
+      //create
+      profile = new Profile(profileFields);
+      await profile.save();
+      res.json(profile);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
     }
   }
 );
